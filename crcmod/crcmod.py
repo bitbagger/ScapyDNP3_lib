@@ -85,7 +85,7 @@ class Crc:
     xorOut -- Final value to XOR with the calculated CRC value.  Used by some
     CRC algorithms.  Defaults to zero.
     '''
-    def __init__(self, poly, initCrc=~0L, rev=True, xorOut=0, initialize=True):
+    def __init__(self, poly, initCrc=~0, rev=True, xorOut=0, initialize=True):
         if not initialize:
             # Don't want to perform the initialization when using new or copy
             # to create a new instance.
@@ -265,7 +265,7 @@ class Crc:
         out.write(_codeTemplate % parms) 
 
 #-----------------------------------------------------------------------------
-def mkCrcFun(poly, initCrc=~0L, rev=True, xorOut=0):
+def mkCrcFun(poly, initCrc=~0, rev=True, xorOut=0):
     '''Return a function that computes the CRC using the specified polynomial.
 
     poly -- integer representation of the generator polynomial
@@ -295,7 +295,7 @@ def _verifyPoly(poly):
     msg = 'The degree of the polynomial must be 8, 16, 24, 32 or 64'
     poly = long(poly) # Use a common representation for all operations
     for n in (8,16,24,32,64):
-        low = 1L<<n
+        low = 1<<n
         high = low*2
         if low <= poly < high:
             return n
@@ -306,11 +306,11 @@ def _verifyPoly(poly):
 
 def _bitrev(x, n):
     x = long(x)
-    y = 0L
+    y = 0
     for i in xrange(n):
-        y = (y << 1) | (x & 1L)
+        y = (y << 1) | (x & 1)
         x = x >> 1
-    if ((1L<<n)-1) <= sys.maxint:
+    if ((1<<n)-1) <= sys.maxint:
         return int(y)
     return y
 
@@ -322,13 +322,13 @@ def _bitrev(x, n):
 def _bytecrc(crc, poly, n):
     crc = long(crc)
     poly = long(poly)
-    mask = 1L<<(n-1)
+    mask = 1<<(n-1)
     for i in xrange(8):
         if crc & mask:
             crc = (crc << 1) ^ poly
         else:
             crc = crc << 1
-    mask = (1L<<n) - 1
+    mask = (1<<n) - 1
     crc = crc & mask
     if mask <= sys.maxint:
         return int(crc)
@@ -338,11 +338,11 @@ def _bytecrc_r(crc, poly, n):
     crc = long(crc)
     poly = long(poly)
     for i in xrange(8):
-        if crc & 1L:
+        if crc & 1:
             crc = (crc >> 1) ^ poly
         else:
             crc = crc >> 1
-    mask = (1L<<n) - 1
+    mask = (1<<n) - 1
     crc = crc & mask
     if mask <= sys.maxint:
         return int(crc)
@@ -357,13 +357,13 @@ def _bytecrc_r(crc, poly, n):
 # have been checked for validity by the caller.
 
 def _mkTable(poly, n):
-    mask = (1L<<n) - 1
+    mask = (1<<n) - 1
     poly = long(poly) & mask
     table = [_bytecrc(long(i)<<(n-8),poly,n) for i in xrange(256)]
     return table
 
 def _mkTable_r(poly, n):
-    mask = (1L<<n) - 1
+    mask = (1<<n) - 1
     poly = _bitrev(long(poly) & mask, n)
     table = [_bytecrc_r(long(i),poly,n) for i in xrange(256)]
     return table
@@ -404,7 +404,7 @@ del typeCode, size
 def _verifyParams(poly, initCrc, xorOut):
     sizeBits = _verifyPoly(poly)
 
-    mask = (1L<<sizeBits) - 1
+    mask = (1<<sizeBits) - 1
 
     # Adjust the initial CRC to the correct data type (unsigned value).
     initCrc = long(initCrc) & mask

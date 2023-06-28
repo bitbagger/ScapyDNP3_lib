@@ -66,9 +66,9 @@ g32 = 0x104C11DB7
 # polynomial from a list of the bits that need to be turned on.
 
 def polyFromBits(bits):
-    p = 0L
+    p = 0
     for n in bits:
-        p = p | (1L << n)
+        p = p | (1 << n)
     return p
 
 # The following is from the paper "An Improved 64-bit Cyclic Redundancy Check
@@ -111,14 +111,14 @@ class poly:
         return cmp(self.p, other.p)
 
     def __nonzero__(self):
-        return self.p != 0L
+        return self.p != 0
 
     def __neg__(self):
         return self # These polynomials are their own inverse under addition
 
     def __invert__(self):
         n = max(self.deg() + 1, 1)
-        x = (1L << n) - 1
+        x = (1 << n) - 1
         return poly(self.p ^ x)
 
     def __add__(self,other):
@@ -131,7 +131,7 @@ class poly:
         a = self.p
         b = other.p
         if a == 0 or b == 0: return poly(0)
-        x = 0L
+        x = 0
         while b:
             if b&1:
                 x = x ^ a
@@ -148,20 +148,20 @@ class poly:
         if n == 0: return (self,poly(0))
         if m < n: return (poly(0),self)
         k = m-n
-        a = 1L << m
+        a = 1 << m
         v = v << k
-        q = 0L
+        q = 0
         while k > 0:
             if a & u:
                 u = u ^ v
-                q = q | 1L
+                q = q | 1
             q = q << 1
             a = a >> 1
             v = v >> 1
             k -= 1
         if a & u:
             u = u ^ v
-            q = q | 1L
+            q = q | 1
         return (poly(q),poly(u))
 
     def __div__(self,other):
@@ -191,7 +191,7 @@ class poly:
         a = self.p
         if a == 0: return -1
         n = 0
-        while a >= 0x10000L:
+        while a >= 0x10000:
             n += 16
             a = a >> 16
         a = int(a)
@@ -206,61 +206,61 @@ class poly:
 # algorithms.
 
 g8p = poly(g8)
-x8p = poly(1L<<8)
+x8p = poly(1<<8)
 def crc8p(d):
     d = map(ord, d)
-    p = 0L
+    p = 0
     for i in d:
-        p = p*256L + i
+        p = p*256 + i
     p = poly(p)
     return long(p*x8p%g8p)
 
 g16p = poly(g16)
-x16p = poly(1L<<16)
+x16p = poly(1<<16)
 def crc16p(d):
     d = map(ord, d)
-    p = 0L
+    p = 0
     for i in d:
-        p = p*256L + i
+        p = p*256 + i
     p = poly(p)
     return long(p*x16p%g16p)
 
 g24p = poly(g24)
-x24p = poly(1L<<24)
+x24p = poly(1<<24)
 def crc24p(d):
     d = map(ord, d)
-    p = 0L
+    p = 0
     for i in d:
-        p = p*256L + i
+        p = p*256 + i
     p = poly(p)
     return long(p*x24p%g24p)
 
 g32p = poly(g32)
-x32p = poly(1L<<32)
+x32p = poly(1<<32)
 def crc32p(d):
     d = map(ord, d)
-    p = 0L
+    p = 0
     for i in d:
-        p = p*256L + i
+        p = p*256 + i
     p = poly(p)
     return long(p*x32p%g32p)
 
 g64ap = poly(g64a)
-x64p = poly(1L<<64)
+x64p = poly(1<<64)
 def crc64ap(d):
     d = map(ord, d)
-    p = 0L
+    p = 0
     for i in d:
-        p = p*256L + i
+        p = p*256 + i
     p = poly(p)
     return long(p*x64p%g64ap)
 
 g64bp = poly(g64b)
 def crc64bp(d):
     d = map(ord, d)
-    p = 0L
+    p = 0
     for i in d:
-        p = p*256L + i
+        p = p*256 + i
     p = poly(p)
     return long(p*x64p%g64bp)
 
@@ -282,9 +282,9 @@ class KnownAnswerTests(unittest.TestCase):
         [ (g24,-1,1),           (0x59BD0E,      0x0AAA37)       ],
         [ (g24,0,1),            (0xD52B0F,      0x1523AB)       ],
         [ (g32,0,0),            (0x6B93DDDB,    0x12DCA0F4)     ],
-        [ (g32,0xFFFFFFFFL,1),  (0x41FB859FL,   0xF7B400A7L)    ],
-        [ (g32,0,1),            (0x6C0695EDL,   0xC1A40EE5L)    ],
-        [ (g32,0,1,0xFFFFFFFF), (0xBE047A60L,   0x084BFF58L)    ],
+        [ (g32,0xFFFFFFFF,1),  (0x41FB859F,   0xF7B400A7)    ],
+        [ (g32,0,1),            (0x6C0695ED,   0xC1A40EE5)    ],
+        [ (g32,0,1,0xFFFFFFFF), (0xBE047A60,   0x084BFF58)    ],
     ]
 
     def test_known_answers(self):
@@ -319,11 +319,11 @@ class CompareReferenceCrcTest(unittest.TestCase):
         """This function modifies the return value of binascii.crc32
         to be an unsigned 32-bit value. I.e. in the range 0 to 2**32-1."""
         # Work around the future warning on constants.
-        if crc > 0x7FFFFFFFL:
-            x = int(crc & 0x7FFFFFFFL)
+        if crc > 0x7FFFFFFF:
+            x = int(crc & 0x7FFFFFFF)
             crc = x | -2147483648
         x = binascii.crc32(d,crc)
-        return long(x) & 0xFFFFFFFFL
+        return long(x) & 0xFFFFFFFF
 
     def test_compare_crc32(self):
         """The binascii module has a 32-bit CRC function that is used in a wide range
@@ -369,7 +369,7 @@ crcValue = 0xFFFFFFFF'''
         self.assertEqual(crc.hexdigest(), 'FFFFFFFF')
 
         crc.update(self.msg)
-        self.assertEqual(crc.crcValue, 0xF7B400A7L)
+        self.assertEqual(crc.crcValue, 0xF7B400A7)
         self.assertEqual(crc.digest(), '\xf7\xb4\x00\xa7')
         self.assertEqual(crc.hexdigest(), 'F7B400A7')
 
@@ -388,7 +388,7 @@ crcValue = 0xF7B400A7'''
     def test_full_crc32_class(self):
         """Verify the CRC class when using xorOut"""
 
-        crc = Crc(g32, initCrc=0, xorOut= ~0L)
+        crc = Crc(g32, initCrc=0, xorOut= ~0)
 
         str_rep = \
 '''poly = 0x104C11DB7
@@ -401,7 +401,7 @@ crcValue = 0x00000000'''
         self.assertEqual(crc.hexdigest(), '00000000')
 
         crc.update(self.msg)
-        self.assertEqual(crc.crcValue, 0x84BFF58L)
+        self.assertEqual(crc.crcValue, 0x84BFF58)
         self.assertEqual(crc.digest(), '\x08\x4b\xff\x58')
         self.assertEqual(crc.hexdigest(), '084BFF58')
 
