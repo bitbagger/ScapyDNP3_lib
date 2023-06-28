@@ -290,8 +290,8 @@ class DNP3(Packet):
 
     def add_data_chunk(self, chunk):
         chunk = update_data_chunk_crc(chunk)
-        self.data_chunks.append(chunk[:-2])
-        self.data_chunks_crc.append(chunk[-2:])
+        self.data_chunks.append(chunk[:-2])  # all list elements, except for the last two
+        self.data_chunks_crc.append(chunk[-2:])  # last two list elements only
 
     def post_build(self, pkt, pay):
         cnk_len = self.chunk_len
@@ -347,7 +347,7 @@ class DNP3(Packet):
         payload = ''
         for chunk in range(len(self.data_chunks)):
             payload = payload + self.data_chunks[chunk] + self.data_chunks_crc[chunk]
-        #  self.show_data_chunks()  # --DEBUGGING
+        # self.show_data_chunks()  # --DEBUGGING
         return pkt+payload
 
     def guess_payload_class(self, payload):
@@ -359,5 +359,6 @@ class DNP3(Packet):
 
 bind_layers(TCP, DNP3, dport=dnp3_port)
 bind_layers(TCP, DNP3, sport=dnp3_port)
-bind_layers(UDP, DNP3, dport=dnp3_port)
-bind_layers(UDP, DNP3, sport=dnp3_port)
+# TODO: Add UDP / DNP3 Support
+# bind_layers(UDP, DNP3, dport=dnp3_port)
+# bind_layers(UDP, DNP3, sport=dnp3_port)
