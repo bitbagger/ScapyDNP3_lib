@@ -46,12 +46,11 @@ try:
     _usingExtension = True
 except ModuleNotFoundError:
     # noinspection PyUnresolvedReferences
-    import _crcfunpy as _crcfun
+    import crcmod._crcfunpy as _crcfun
     _usingExtension = False
 
 import sys
 import struct
-from numpy import long
 
 
 #-----------------------------------------------------------------------------
@@ -310,7 +309,7 @@ def _verifyPoly(poly):
 # Bit reverse the input value.
 
 def _bitrev(x, n):
-    x = long(x)
+    x = int(x)
     y = 0
     for i in range(n):
         y = (y << 1) | (x & 1)
@@ -325,8 +324,8 @@ def _bitrev(x, n):
 # bit of the polynomial has been stripped off.
 
 def _bytecrc(crc, poly, n):
-    crc = long(crc)
-    poly = long(poly)
+    crc = int(crc)
+    poly = int(poly)
     mask = 1<<(n-1)
     for i in range(8):
         if crc & mask:
@@ -340,8 +339,8 @@ def _bytecrc(crc, poly, n):
     return crc
 
 def _bytecrc_r(crc, poly, n):
-    crc = long(crc)
-    poly = long(poly)
+    crc = int(crc)
+    poly = int(poly)
     for i in range(8):
         if crc & 1:
             crc = (crc >> 1) ^ poly
@@ -363,14 +362,14 @@ def _bytecrc_r(crc, poly, n):
 
 def _mkTable(poly, n):
     mask = (1<<n) - 1
-    poly = long(poly) & mask
-    table = [_bytecrc(long(i)<<(n-8),poly,n) for i in range(256)]
+    poly = int(poly) & mask
+    table = [_bytecrc(int(i)<<(n-8),poly,n) for i in range(256)]
     return table
 
 def _mkTable_r(poly, n):
     mask = (1<<n) - 1
-    poly = _bitrev(long(poly) & mask, n)
-    table = [_bytecrc_r(long(i),poly,n) for i in range(256)]
+    poly = _bitrev(int(poly) & mask, n)
+    table = [_bytecrc_r(int(i),poly,n) for i in range(256)]
     return table
 
 #-----------------------------------------------------------------------------
@@ -412,12 +411,12 @@ def _verifyParams(poly, initCrc, xorOut):
     mask = (1<<sizeBits) - 1
 
     # Adjust the initial CRC to the correct data type (unsigned value).
-    initCrc = long(initCrc) & mask
+    initCrc = int(initCrc) & mask
     if mask <= sys.maxsize:
         initCrc = int(initCrc)
 
     # Similar for XOR-out value.
-    xorOut = long(xorOut) & mask
+    xorOut = int(xorOut) & mask
     if mask <= sys.maxsize:
         xorOut = int(xorOut)
 

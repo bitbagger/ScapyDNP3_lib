@@ -19,7 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #-----------------------------------------------------------------------------
-'''
+"""
 crcmod.predefined defines some well-known CRC algorithms.
 
 To use it, e.g.:
@@ -30,7 +30,7 @@ To use it, e.g.:
 
 crcmod.predefined.Crc is an alias for crcmod.predefined.PredefinedCrc
 But if doing 'from crc.predefined import *', only PredefinedCrc is imported.
-'''
+"""
 
 # local imports
 import crcmod
