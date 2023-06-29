@@ -92,7 +92,7 @@ g64b = polyFromBits([64, 62, 57, 55, 54, 53, 52, 47, 46, 45, 40, 39, 38, 37,
 class poly:
     '''Class implementing polynomials over the field of integers mod 2'''
     def __init__(self,p):
-        p = long(p)
+        p = int(p)
         if p < 0: raise ValueError('invalid polynomial')
         self.p = p
 
@@ -105,10 +105,14 @@ class poly:
     def __ne__(self,other):
         return self.p != other.p
 
+    @staticmethod
+    def cmp(a, b):
+        return (a > b) - (a < b)
+
     # To allow sorting of polynomials, use their long integer form for
     # comparison
-    def __cmp__(self,other):
-        return cmp(self.p, other.p)
+    def __cmp__(self, other):
+        return self.cmp(self.p, other.p)
 
     def __nonzero__(self):
         return self.p != 0
@@ -213,7 +217,7 @@ def crc8p(d):
     for i in d:
         p = p*256 + i
     p = poly(p)
-    return long(p*x8p%g8p)
+    return int(p*x8p%g8p)
 
 g16p = poly(g16)
 x16p = poly(1<<16)
@@ -223,7 +227,7 @@ def crc16p(d):
     for i in d:
         p = p*256 + i
     p = poly(p)
-    return long(p*x16p%g16p)
+    return int(p*x16p%g16p)
 
 g24p = poly(g24)
 x24p = poly(1<<24)
@@ -233,7 +237,7 @@ def crc24p(d):
     for i in d:
         p = p*256 + i
     p = poly(p)
-    return long(p*x24p%g24p)
+    return int(p*x24p%g24p)
 
 g32p = poly(g32)
 x32p = poly(1<<32)
@@ -243,7 +247,7 @@ def crc32p(d):
     for i in d:
         p = p*256 + i
     p = poly(p)
-    return long(p*x32p%g32p)
+    return int(p*x32p%g32p)
 
 g64ap = poly(g64a)
 x64p = poly(1<<64)
@@ -253,7 +257,7 @@ def crc64ap(d):
     for i in d:
         p = p*256 + i
     p = poly(p)
-    return long(p*x64p%g64ap)
+    return int(p*x64p%g64ap)
 
 g64bp = poly(g64b)
 def crc64bp(d):
@@ -262,7 +266,7 @@ def crc64bp(d):
     for i in d:
         p = p*256 + i
     p = poly(p)
-    return long(p*x64p%g64bp)
+    return int(p*x64p%g64bp)
 
 
 class KnownAnswerTests(unittest.TestCase):
@@ -323,7 +327,7 @@ class CompareReferenceCrcTest(unittest.TestCase):
             x = int(crc & 0x7FFFFFFF)
             crc = x | -2147483648
         x = binascii.crc32(d,crc)
-        return long(x) & 0xFFFFFFFF
+        return int(x) & 0xFFFFFFFF
 
     def test_compare_crc32(self):
         """The binascii module has a 32-bit CRC function that is used in a wide range
@@ -491,8 +495,7 @@ class PredefinedCrcTest(unittest.TestCase):
 
 
 def runtests():
-    print "Using extension:", _usingExtension
-    print
+    print(f"Using extension: {_usingExtension}\n")
     unittest.main()
 
 

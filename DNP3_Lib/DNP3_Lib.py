@@ -334,7 +334,7 @@ class DNP3(Packet):
         self.data_chunks_crc = []
 
         remaining_pay = pay_len
-        for c in range(chunks):
+        for c in range(int(chunks)):
             index = c * cnk_len  # data chunk
 
             if (remaining_pay < cnk_len) and (remaining_pay > 0):
