@@ -177,7 +177,7 @@ class DNP3ApplicationResponse(DNP3Application):
     def mysummary(self):
         if isinstance(self.underlayer.underlayer, DNP3):
             # print self.FUNC_CODE.SEQ, "Hello"
-            print(f"{self.FUNC_CODE.SEQ, 'Hello'}")
+            print(f"{self.FUNC_CODE.SEQ, 'Hello'}")  # A good place for the "BLOCK" string
             return self.underlayer.underlayer.sprintf(DNP3_summary + Transport_summary + Application_Rsp_summary)
         if isinstance(self.underlayer, DNP3Transport):
             return self.underlayer.sprintf(Transport_summary + Application_Rsp_summary)
@@ -348,6 +348,7 @@ class DNP3(Packet):
         for chunk in range(len(self.data_chunks)):
             payload = payload + self.data_chunks[chunk] + self.data_chunks_crc[chunk]
         # self.show_data_chunks()  # --DEBUGGING
+        # print(f"pkt: {pkt}, payload: {payload}")  # --DEBUGGING
         return pkt+payload
 
     def guess_payload_class(self, payload):
