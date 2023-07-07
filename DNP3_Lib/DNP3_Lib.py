@@ -346,10 +346,10 @@ class DNP3(Packet):
 
         payload = ''
         for chunk in range(len(self.data_chunks)):
-            payload = payload + self.data_chunks[chunk] + self.data_chunks_crc[chunk]
+            payload = str(payload) + str(self.data_chunks[chunk]) + str(self.data_chunks_crc[chunk])
         # self.show_data_chunks()  # --DEBUGGING
-        # print(f"pkt: {pkt}, payload: {payload}")  # --DEBUGGING
-        return pkt+payload
+        print(f"pkt: {pkt}, payload: {payload}")  # --DEBUGGING
+        return pkt + bytes(payload, 'utf-8')
 
     def guess_payload_class(self, payload):
         if len(payload) > 0:
