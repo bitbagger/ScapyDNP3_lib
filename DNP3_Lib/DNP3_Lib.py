@@ -26,7 +26,8 @@ MASTER = 1
 OUTSTATION = 0
 SET = 1
 UNSET = 0
-dnp3_port = 20000
+dnp3_src_port = 20000
+dnp3_dst_port = 20000
 
 Transport_summary = "Seq:%DNP3Transport.SEQUENCE% "
 Application_Rsp_summary = "Response %DNP3ApplicationResponse.FUNC_CODE% "
@@ -358,8 +359,7 @@ class DNP3(Packet):
             return Packet.guess_payload_class(self, payload)
 
 
-bind_layers(TCP, DNP3, dport=dnp3_port)
-bind_layers(TCP, DNP3, sport=dnp3_port)
-# TODO: Add UDP / DNP3 Support
-# bind_layers(UDP, DNP3, dport=dnp3_port)
-# bind_layers(UDP, DNP3, sport=dnp3_port)
+bind_layers(TCP, DNP3, dport=dnp3_dst_port)
+bind_layers(TCP, DNP3, sport=dnp3_src_port)
+bind_layers(UDP, DNP3, dport=dnp3_dst_port)
+bind_layers(UDP, DNP3, sport=dnp3_src_port)
